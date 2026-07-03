@@ -11,18 +11,20 @@ that get the module built against the real infrastructure instead of guesses.
 
 ## Launch sequence
 
-### ① Recon — run once, on the Mac
-Paste `prompts/HERMES-RECON.md` into Hermes (or Claude Code at
-`/Users/quantumcode/CODE`). It verifies — not summarizes — LEMON AI CENTER's module
-architecture, brain, and KNOWN_FACTS; the six development apps and their data; the
-skill library and how to fire it programmatically; and the full deployment map across
-Firebase / Vercel / Railway / Hostinger / Google. Output: `RECON-REPORT.md`.
+### ① Recon — ✅ DONE (both parts)
+Part 1 ran on the Hermes VPS (embedded in `prompts/MASTER-BUILD-PROMPT.md`); Part 2
+ran on the Mac (`prompts/RECON-REPORT-MAC`) and supersedes Part 1 where they conflict.
+Headlines: **LEMON-AI-CENTER exists** (ceo.billyrovzar.com, Railway,
+`brovzar-lab/lemon-ai-center`); its brain is FlexSearch over the Obsidian vault (no
+embeddings — we add the vector layer); KNOWN_FACTS doesn't exist (replaced per D2);
+the six named skills need consolidation (D6). Binding resolutions:
+`docs/ARCHITECTURE-DECISIONS.md`.
 
-### ② Build — Fable 5
-Open a Fable 5 (Claude Code) session with this repo **and** the LEMON AI CENTER
-codebase available (locally, or remotely after adding the repos named in the recon
-report). Paste the recon report into `prompts/MASTER-BUILD-PROMPT.md` and run it.
-It builds in nine milestones, working software at every step.
+### ② Build — Fable 5 ← YOU ARE HERE
+Open a Fable 5 (Claude Code) session with this repo **and**
+`brovzar-lab/lemon-ai-center` (locally on the Mac, or remotely via `add_repo`). Paste
+`prompts/MASTER-BUILD-PROMPT.md` (below the divider) as the opening prompt. Nine
+milestones, working software at every step.
 
 ### ③ Onboard the slate
 The module's wizard creates the canonical `DEVELOPMENT/` folder

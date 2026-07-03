@@ -1,9 +1,13 @@
 # MASTER BUILD PROMPT — DEVELOPMENT-HELL
 
 > **How to use this file:** Run a Fable 5 session (Claude Code) with access to BOTH
-> this repo and the LEMON AI CENTER codebase (locally on the Mac, or remotely after
-> `add_repo`-ing the repos named in the recon report). Fill the `<RECON-REPORT>` slot,
-> then paste everything below the line as the opening prompt.
+> this repo and the LEMON AI CENTER codebase — locally on the Mac
+> (`/Users/quantumcode/CODE/LEMON-AI-CENTER`), or remotely after adding
+> `brovzar-lab/lemon-ai-center` with `add_repo`. The recon is COMPLETE: Part 1 (VPS)
+> is embedded below; Part 2 (Mac) is `prompts/RECON-REPORT-MAC` — Part 2 supersedes
+> Part 1 wherever they touch the same subject, and `docs/ARCHITECTURE-DECISIONS.md`
+> records the binding resolutions. Paste everything below the line as the opening
+> prompt.
 
 ---
 
@@ -20,12 +24,15 @@ stale. This is a power tool meant to be an unfair advantage — build it like on
    acceptance-test queries.
 2. `docs/FOLDER-STRUCTURE.md` — the canonical DEVELOPMENT folder and `project.yaml`
    schema the scanner must parse.
-3. The recon report below — the verified map of the real infrastructure. **Where the
-   spec and the recon conflict, the recon wins**; flag the conflict and amend the spec
-   in the same commit.
+3. `docs/ARCHITECTURE-DECISIONS.md` — the binding resolutions of every spec↔recon
+   conflict (D1–D8). This outranks both the spec and the raw recon text.
+4. The recon reports — Part 1 (VPS) embedded below, Part 2 (Mac) at
+   `prompts/RECON-REPORT-MAC`. Part 2 was run with real access to
+   `/Users/quantumcode/CODE` and **supersedes Part 1** wherever they conflict
+   (notably: LEMON AI CENTER exists; Part 1 couldn't see it).
 
-If either doc is missing from your working tree, stop and say so — do not rebuild the
-spec from memory.
+If any of these docs is missing from your working tree, stop and say so — do not
+rebuild the spec from memory.
 
 ## Recon report
 
@@ -470,21 +477,25 @@ a//opt/data/RECON-REPORT.md → b//opt/data/RECON-REPORT.md
     
 </RECON-REPORT>
 
-## Architecture constraints (non-negotiable)
+## Architecture constraints (non-negotiable — details per ARCHITECTURE-DECISIONS.md)
 
-- **A module inside LEMON AI CENTER** — follow AI CENTER's existing module/section
-  pattern exactly as the recon documents it. Match its stack, its routing, its styling.
-  No parallel app, no second server unless the recon shows AI CENTER cannot host a
-  background worker (then: one small companion daemon, nothing more).
-- **One brain.** Extend AI CENTER's existing LLM layer; do not add a second AI stack.
-- **One source of truth.** Read and write KNOWN_FACTS in the exact format the recon
-  documents. Slate-level facts (folder location, project list, stage changes) belong
-  in KNOWN_FACTS so every other tool sees them.
-- **Same auth.** Sit behind whatever AI CENTER already uses.
-- **Skills, not reimplementations.** Coverage, dev notes, budgets, rewrites are the
-  existing skills (lemon-coverage, dev-exec, film-finance, story-ninja, co-writer,
-  chivo, …) invoked programmatically the way the recon verified. Never reimplement a
-  skill's job inline.
+- **A module inside LEMON-AI-CENTER** (D1) — routes in `server/routes/`, libs in
+  `server/lib/`, one Zustand store per domain in `src/stores/`, behind the existing
+  `requireAuth` + `csrfCheck`. Match its stack, routing, and styling. The only process
+  outside the app is the Mac-side ingest daemon (D4), modeled on
+  LEMON-SCREENPLAY-DASHBOARD's queue pattern.
+- **One brain** (D3) — every AI call through the existing `getAnthropicClient()`
+  pattern with current Claude model ids in one shared constant. No Hermes dependency,
+  no second AI stack. The slate index adds the fleet's first vector layer (D5):
+  hybrid retrieval alongside the existing FlexSearch brain.
+- **One source of truth** (D2) — KNOWN_FACTS does not exist. Slate facts live in
+  Firestore `slate/*` collections plus one status note per project written into the
+  OBSIDIAN BRAIN vault, so the existing brain and `seedFromVault` see them natively.
+- **Same auth.** Google OAuth + allow-list, exactly as the app does today.
+- **Skills, not reimplementations** (D6) — first consolidate the canonical Lemon
+  skill set (four existing project-scoped skills copied in; film-finance and chivo
+  authored new for Billy's review), then dispatch = SKILL.md as system context + the
+  project's material through the app's Anthropic layer.
 
 ## Build order — one milestone per commit, working software at every step
 

@@ -1,5 +1,12 @@
 # DEVELOPMENT-HELL — Product Spec
 
+> **Amended 2026-07-03, post-recon.** Both recon parts are in. Read this spec through
+> `docs/ARCHITECTURE-DECISIONS.md`, which resolves every spec↔recon conflict. The two
+> that matter most while reading: **"KNOWN_FACTS" does not exist** — wherever this spec
+> says KNOWN_FACTS, read "Firestore `slate/*` collections + a status note per project
+> in the OBSIDIAN BRAIN vault" (D2); and **the brain** is LEMON-AI-CENTER's existing
+> Anthropic layer, not Hermes (D3).
+
 The Development module of **LEMON AI CENTER**. A development executive's command center:
 every project on the slate, readable and queryable by the brain, pushed forward
 proactively so nothing goes stale, with the existing skill library as the verbs.
