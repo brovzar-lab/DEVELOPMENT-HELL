@@ -42,6 +42,35 @@ boot, 401 on unauthenticated API, empty state in the browser, `g 0` shortcut.
   by the module): `src/__tests__/Header.test.tsx` "Refresh all data" button.
   Not ours; flagged for a separate fix.
 
-**Next:** Milestone 2 — onboarding wizard + scanner (folder per
-`docs/FOLDER-STRUCTURE.md`; location saved to Firestore slate config +
-surfaced via the vault note, per D2's KNOWN_FACTS replacement).
+## Milestone 2 — onboarding wizard + scanner (`0349e2a`, 2026-07-02)
+
+Wizard creates `DEVELOPMENT/` (+ `_external`, `_archive`, `_inbox`), saves the
+location to Firestore `slate_config/settings` (D2), runs the first scan, starts
+the watcher. Scanner populates `slate/*` deterministically; convention breaks
+land in `slate_confirm` instead of silent filing. Verified live against real
+Firestore (fixture slate: scan, firewall, archive→dead, confirm queue, vault
+notes, watcher picked up a dropped draft; cleanup left Firestore virgin).
+
+**Where things landed:**
+
+| Piece | Location |
+|---|---|
+| Parser | `server/lib/slate/parser.ts` — project.yaml validation (slug==folder, stage↔format), draft `<SLUG>_v<NN>[_ep<NN>]_<YYYY-MM-DD>[_label].<ext>`, doc `<SLUG>_<treatment\|synopsis\|outline\|bible>_v<NN>_<date>`, coverage `<SLUG>_<skill>_<date>.md` |
+| Scanner | `server/lib/slate/scanner.ts` — pure `scanDevelopmentFolder()` + Firestore sync (disk wins, replace semantics); `runSlateScan()` is the single writer of slate state |
+| Rules as built | `_external/` placement forces `origin: external` + queues the inconsistency (firewall never weakens); `_archive/` forces `status: dead`; `_inbox/` + loose/bad-named files → `slate_confirm` (stable sha1-of-path ids); free-form folders: `01-idea`, `notes`, `correspondence`; `current_draft` = highest version; `last_touched` = max mtime |
+| Config (D2) | `server/lib/slate/config.ts` → `slate_config/settings` `{ devFolderPath, onboardedAt, lastScanAt }` |
+| Vault notes (D2) | `server/lib/slate/vaultNote.ts` → `<vault>/slate/<SLUG>.md`, content-diffed, module-owned folder only; picked up by FlexSearch brain + `seedFromVault` automatically |
+| Watcher (D4) | `server/lib/slate/watcher.ts` — chokidar, 1.2s debounce + awaitWriteFinish, full rescan per event; `initSlateWatcher()` at boot (catch-up scan); off when folder unreachable (Railway) |
+| Routes | `GET /api/slate/status\|projects\|confirm`, `POST /api/slate/onboard\|rescan` (csrfCheck = Origin allow-list; localhost passes in dev) |
+| UI | `DevHellView`: wizard (default `~/DEVELOPMENT`, demo mode disables the action) → onboarded dashboard (folder chip, watcher badge, rescan, confirm queue, project rows with priority/vNN/waiting-on) |
+| Deps added | `js-yaml` + `@types/js-yaml` (both in `dependencies` — Railway `npm ci` skips devDeps) |
+
+**Deltas/notes:** filing *actions* on confirm-queue items (move/rename/one-click
+brain proposals) are deliberately not in M2 — the queue clears itself when the
+file is fixed on disk; actions belong with a later milestone. E2E note: real
+Google auth can't run headless, so the authenticated flow was driven at the lib
+layer against real Firestore + a scratch vault; the browser verified wizard
+rendering and demo-mode degradation.
+
+**Next:** Milestone 3 — the slate board (cards in stage columns, film/series
+lanes, priority, staleness heat, waiting-on, external badge).
