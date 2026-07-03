@@ -1,0 +1,308 @@
+# RECON REPORT — Part 2: The Mac
+
+> Companion to Part 1 (Hermes VPS recon). This part covers only what the VPS
+> physically could not see: `/Users/quantumcode/CODE` and the Mac's local tooling.
+> Executed on the Mac, read-only, 2026-07-02. Every claim is tagged
+> `✅ VERIFIED` (command + output shown) or `⚠️ ASSUMED` (inference). A thing not
+> existing is recorded as a finding.
+
+---
+
+## TL;DR — the four things that fork the architecture
+
+1. **LEMON AI CENTER EXISTS and is the crown jewel.** ✅ It's not a myth — it's a
+   full-stack, production-deployed CEO command center at `LEMON-AI-CENTER/`, live at
+   **https://ceo.billyrovzar.com**, repo `brovzar-lab/lemon-ai-center`. Vite+React+Express+Firebase,
+   Anthropic-powered, with a scheduled "Mission Control Engine." Part 1's "does not exist"
+   was true *only for the VPS*.
+2. **Its "brain" is FlexSearch full-text over the Obsidian vault — NOT vector embeddings.**
+   ✅ No embeddings, no vector DB. There is also **no `KNOWN_FACTS` file/store** anywhere.
+   The knowledge substrate is the `OBSIDIAN BRAIN` vault + a Firestore `corrections` loop.
+3. **Billy's six named skills are mostly aspirational.** ✅ 4 of 6 exist only as
+   *project-scoped* files or inside an upload bundle (never globally installed); 2
+   (`film-finance`, `chivo`) don't exist as skills at all. Neither the VPS nor the Mac has
+   them as active global skills.
+4. **The Mac has its OWN local Hermes brain (xAI grok-4.3), but NO wired path to the VPS
+   Hermes gateway.** ✅ A Mac dashboard could shell out to the local `hermes` CLI, or just
+   use LEMON-AI-CENTER's existing Anthropic layer. The remote VPS Hermes API is an unfilled template.
+
+---
+
+## Gap 1 — Does LEMON AI CENTER exist on this Mac? → YES ✅
+
+```
+$ ls /Users/quantumcode/CODE | grep -i center
+LEMON-AI-CENTER          # dir, last modified Jun 21 2026
+```
+
+Full Target-1 treatment follows.
+
+### Identity & deployment
+- **Path:** `/Users/quantumcode/CODE/LEMON-AI-CENTER`
+- **Repo:** `https://github.com/brovzar-lab/lemon-ai-center.git` ✅ (`git remote -v`)
+- **Production URL:** `https://ceo.billyrovzar.com` (canonical), hosted on **Railway**
+  (service `lemon-ai-center`) ✅ (`README.md`, `railway.json`). Legacy hostname
+  `lemon.billyrovzar.com` referenced in `.env.example`.
+- **One-liner (from README):** "Billy Rovzar's command center for Lemon Studios.
+  Gmail + Google Calendar + Obsidian Brain + Anthropic AI in one dashboard." ✅
+
+### Stack ✅ (`package.json`, `CLAUDE.md`)
+- **Frontend:** Vite 5 + React 18 + TypeScript, Zustand (one store per domain), Tailwind 3.
+- **Backend:** Express 4 (TypeScript → CJS), on port 3001; Vite dev on 5173.
+- **Data:** Firebase / Firestore (client + admin SDK), Google OAuth (Gmail + Calendar).
+- **AI:** `@anthropic-ai/sdk` ^0.27.0; Gemini for TTS.
+- **Aliases:** `@/*` → `src/`, `@shared/*` → `shared/`.
+
+### Run it ✅
+```
+npm install
+npm run dev     # → concurrently: vite (:5173) + tsx watch server/index.ts (:3001)
+npm run build   # vite build && tsc -p server/tsconfig.json
+npm start       # node server/dist/server/index.js   (prod entry)
+npm test        # vitest
+```
+`node_modules/` is present (deps installed). I did **not** boot the server (would need
+`.env` secrets + Google OAuth); this is the verified script contract, tagged ⚠️ ASSUMED
+for "it actually starts clean" since I didn't run it.
+
+### Module pattern — real code example ✅
+Server libs are single-responsibility modules under `server/lib/`, each wrapping one
+capability. The AI client is a one-function factory:
+
+```ts
+// server/lib/anthropic.ts
+import Anthropic from '@anthropic-ai/sdk'
+export function getAnthropicClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+}
+```
+
+Routes live in `server/routes/` (one file per surface) and all `/api/*` go through
+`requireAuth`; write routes add `csrfCheck` (per `CLAUDE.md`). Frontend mirrors this:
+one Zustand store per domain in `src/stores/`, components in `src/components/`, with
+seeds in `src/data/seeds.ts` as the offline/demo fallback.
+
+Routes present ✅ (`ls server/routes`):
+`actions, aiChat, auth, brain, brief, calendar, captures, claude, corrections,
+delegations, draftReply, engine, gmail, ready, scan, spark, tasks, today, tts, voice`.
+
+### The brain — model, API layer, key location ✅
+
+**Models in use** (`grep model: server/lib`):
+| Purpose | Model | File |
+|---|---|---|
+| Priority engine | `claude-sonnet-4-6` | `server/lib/priorityEngine.ts:72` |
+| Weekly review | `claude-sonnet-4-6` | `server/lib/engine/jobs/weeklyReview.ts:9` |
+| Relationship context | `claude-haiku-4-5-20251001` | `server/lib/relationshipContext.ts:48` |
+| Precompute / briefing | `claude-haiku-4-5-20251001` | `server/lib/precompute.ts:35` |
+
+> Note: these model IDs (`claude-sonnet-4-6`) are what the code hardcodes today — a
+> pre-Claude-5 generation. A refresh to current models would be a one-line-per-file change.
+
+**API layer:** every AI call constructs `new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })`
+and calls `anthropic.messages.create(...)`. Chat tools are declared as
+`Anthropic.Tool[]` in `server/lib/engine/chatTools.ts:134`.
+
+**Key location:** `ANTHROPIC_API_KEY` — server-side only, injected via Railway env /
+local `.env` (present at `LEMON-AI-CENTER/.env`, gitignored). No value read.
+
+### The "Mission Control Engine" ✅ (`server/lib/engine/`)
+A scheduled autonomous layer that runs jobs as one Firebase uid (`CEO_UID`), triggered by
+Railway Cron hitting `POST /api/engine/cron/:jobId` (shared secret `ENGINE_CRON_SECRET`).
+Jobs (`server/lib/engine/jobs/`):
+`advisor, eveningWrap, inboxScan, morningAssembly, nightly, seedFromVault, slipDetect,
+watchlist, weeklyReview, writingBlock`. Supporting libs: `burnout, chatTools, ranker, slips`.
+
+### KNOWN_FACTS store? → DOES NOT EXIST ✅
+```
+$ grep -ril "known_facts\|known-facts\|knownfacts" server src shared docs
+(no matches)
+```
+There is **no `KNOWN_FACTS` file, JSON store, or Firestore collection** by that name.
+The functional equivalents are:
+- **The Obsidian vault** (`OBSIDIAN BRAIN`), indexed at startup — this is the fact base.
+- **A `corrections` loop:** `server/routes/corrections.ts` + `CorrectionInput.tsx` /
+  `useDecisionStore` — the user corrects the AI and corrections are written back
+  (vault write-back per README). `seedFromVault` job seeds engine state from the vault.
+- **Firestore** for tasks/decisions/captures/delegations.
+
+### Embeddings / vector search? → NONE ✅
+```
+$ sed -n '1,20p' server/lib/brain/indexer.ts
+import FlexSearch from 'flexsearch'
+/** Full-text search index backed by FlexSearch. */
+export class BrainIndex {
+  this.index = new FlexSearch.Index({ tokenize: 'forward', resolution: 9, cache: true })
+```
+The brain (`server/lib/brain/`: `index, indexer, scanner, watcher, types`) is a
+**FlexSearch full-text index** over vault markdown (title + folder + plainText).
+`chokidar` watches the vault for live re-index. `types.ts` has a comment "chunks for
+embedding/retrieval" but **no embedding code exists** — it's forward-tokenized keyword
+search, not semantic/vector. → If a future dashboard wants semantic recall, it must add
+a vector layer; there's nothing to reuse.
+
+### Auth & security ✅
+- Google OAuth (Gmail+Calendar) via `server/lib/googleAuth.ts`; allow-list
+  `ALLOWED_EMAILS=billy@lemonfilms.com`.
+- Sessions: `__Host-` cookie prefix, httpOnly, secure, sameSite (`CLAUDE.md`).
+  Tokens encrypted with `TOKEN_ENCRYPTION_KEY` (never written to Firestore).
+- CSRF: `csrfCheck` on writes, gated by `ALLOWED_ORIGIN`.
+- `firestore.rules` present (3.2 KB).
+
+### Database ✅
+- **Primary:** Firebase project set via `FIREBASE_PROJECT_ID` / `VITE_FIREBASE_PROJECT_ID`
+  (values in `.env`, not committed).
+- **Secondary (read-mostly):** the LEMON workspace project — `.env.example` hardcodes
+  `VITE_LEMON_FIREBASE_PROJECT_ID=lemon-es-tu-dios`, powering Deals/Projects/Memory/Archive views.
+- Notion integration too: `NOTION_BRAIN_PAGE_ID=33e9ea4083a280b2a8a5ece897250a7e`, `NOTION_API_KEY`.
+
+---
+
+## Gap 2 — The six apps (Target-2, real access)
+
+All six confirmed present. All belong to the `brovzar-lab` GitHub org (except two that
+aren't git repos) and share a common template lineage (Firebase `llmProxy` cloud function,
+`.agent/skills`, `dev-full.sh`). Firebase project IDs cross-checked against
+`firebase projects:list` (Gap 4).
+
+| App | Folder | Repo (`git remote -v`) | Stack | Launch | Data / Firebase project | Formats | Integration surface | Keys (path · names, no values) |
+|---|---|---|---|---|---|---|---|---|
+| **QUANTUMSTORY** | `QUANTUMSTORY` | `brovzar-lab/quantum-story` ✅ | React 19 + Vite 6 + TS, Tailwind 4, **Gemini** (`@google/genai`) | `npm run dev` (deps ✅) | `screenpartner-16217665-33d08` ✅ (Firestore) | fdx, fountain, pdf, docx | Cloud Fn `llmProxy` (`functions/src/llmProxy.ts:56`, onRequest) | `.env/.env.local` · `VITE_GEMINI_API_KEY`, `VITE_PROXY_URL` |
+| **BESTSCREEN** | `BESTSCREEN` | `brovzar-lab/bestscreen` ✅ | **Vanilla JS/HTML/CSS, no build** | `npm run dev`→`node dev-server.js` (deps ✅) | `wr-ai-ters-room` ✅ + local-first localStorage | fdx, fountain | local Node dev server (static/file) | `.env` · `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `AI_PROVIDER`, `FIREBASE_*` |
+| **FRACTAL STORY ROOM** | `FRACTAL STORY ROOM` | `brovzar-lab/FRACTAL-STORY-ROOM` ✅ | React + Vite, TipTap, dnd-kit, Zustand; **Anthropic via proxy** | `npm run dev` (deps ✅) | `fractal-story-room` ✅ (Firestore + indexes) | fountain, fdx, pdf | 2× Cloud Fn onRequest (`functions/index.js`) | `.env` · `VITE_CLAUDE_PROXY_URL`, `VITE_FIREBASE_*` |
+| **WR-AI-TERS ROOM AG** | `WR-AI-TERS ROOM AG` | `brovzar-lab/Wr-AI-ters-Room-AG` ✅ | React 19 + Vite 6 + TS, **Gemini** (gemini-3-pro/flash + TTS) | `npm run dev` / `dev:full` (deps ✅) | `wr-ai-ters-room` ✅ (Firestore) | fountain, pdf, docx | Cloud Fn `llmProxy` (`functions/src/llmProxy.ts:29`); `screenwriting-personas` dir | `.env.local` · `GEMINI_API_KEY`, `VITE_FIREBASE_*` |
+| **LEMON-SCREENPLAY-DASHBOARD** | `LEMON-SCREENPLAY-DASHBOARD` | `brovzar-lab/Lemon-Screenplay-Dashboard` ✅ | React + Vite + TS, TanStack Query, Zustand, Recharts, react-pdf; **most mature** (v6.9, CI, e2e) | `npm run dev` / `dev:full` (deps ✅) | `lemon-screenplay-dashboard` ✅ + Firestore `ingest-queue` | pdf (primary), docx; out: PDF+CSV | Cloud Fns `llmProxy`, `onScreenplayUploaded` (Storage trigger), `ingestQueue`; **`daemon.py`** VPS ingest daemon polling Firestore every 10s | `.env` · `TMDB_API_KEY`, `VITE_GOOGLE_API_KEY`, `GOOGLE_APPLICATION_CREDENTIALS`; **`service-account.json` present** (path only) |
+| **AI-DETECTOR** | `AI-DETECTOR` | **not a git repo** ✅ | Node/Express + static frontend | `npm start`→`node server.js` (deps ✅) | none (stateless, no Firebase) | pdf, docx in; report + rewrite out | **Real HTTP API:** `POST /api/detect`, `/api/humanize`, `/api/upload`, `GET /api/capabilities`, `/api/settings`, `/api/health` | `.env` · `ANTHROPIC_API_KEY`, `JUDGE_MODEL`, `HUMANIZER_MODEL`, `GPTZERO_API_KEY`, `SAPLING_API_KEY`, `ORIGINALITY_API_KEY`, `WINSTON_API_KEY` |
+
+**Notable cross-cutting facts:**
+- ⚠️ **Firebase project collision:** BESTSCREEN and WR-AI-TERS ROOM AG both target
+  `wr-ai-ters-room`.
+- **Only LEMON-SCREENPLAY-DASHBOARD** has a committed-locally `service-account.json`
+  (the one Part 1 referenced) and a real VPS-side Python daemon.
+- **Two AI providers split the fleet:** QUANTUMSTORY + WR-AI-TERS use **Gemini**;
+  FRACTAL + BESTSCREEN + AI-DETECTOR + LEMON-AI-CENTER use **Anthropic** (often via a proxy fn).
+
+### Other dev-relevant apps in CODE (incl. MATADERO-RW)
+- **MATADERO-RW** ✅ — React+Vite SPA (`matadero-rw` v0.0.0), **not a git repo**, no backend,
+  no `.env`, single-user, browser-only state. Rewrites the MATADERO Mexican-horror screenplay
+  (28 sections / 4 acts, A/B/C + AI versions, plant/payoff tracker). Calls Anthropic
+  **directly from the client** (`src/App.jsx:122`) — ⚠️ key is hardcoded or pasted at runtime
+  (no env file); worth a look if this ever ships.
+- Firebase projects confirmed live for related apps ✅ (`firebase projects:list`):
+  `carpetify-mx, fractal-story-room, lemon-aivo, lemon-es-tu-dios, lemon-es-tu-dios-2,
+  lemon-screenplay-dashboard, lemon-studios-os, screenpartner-16217665-33d08 (QuantumStory),
+  topsheet-ai, wr-ai-ters-room, gen-lang-client-0882654423 (STUDIO)` — 11 total.
+- Other real projects (one-liners): **LEMON-STUDIOS-OS** (Operating Intelligence v2),
+  **TOPSHEET AI** (Lemon Budget Engine, `topsheet-ai`), **CARPETIFY** (`carpetify-mx`),
+  **PAPERCLIP** (agent runtime — see Gap 5), **BATEMAN** ("HERMES DESK"),
+  **CODING_CENTRAL** (Mission Control), **CLAUDE-OS**, **DASH-2** (personal assistant),
+  **SECRETSOFSTORY / TRUBY / SPLITDEV1 / STORIQ / RE-RIGHT / RAPID-STORY-APP** (story tools),
+  **APP-TEMPLATE** (the multi-LLM scaffold the fleet derives from), **DESUBSCRIBE**,
+  **character-social** (Next.js), **MASTER-LIBRARY** (skills), **OBSIDIAN BRAIN** (the vault).
+
+---
+
+## Gap 3 — Skill-name discrepancy → mostly ASPIRATIONAL ✅
+
+Globally-installed skills on the Mac (`ls ~/.claude/skills`): **6 only** —
+`dream, impeccable, karpathy, lemon-comedy-engine, refine, skill-name`. **None of Billy's
+six named skills are installed globally.**
+
+| Billy's skill | Status on Mac | Where (if anywhere) |
+|---|---|---|
+| **co-writer** | project-scoped / bundle only | `WR-AI-TERS ROOM AG/screenwriting skills/co-writer/SKILL.md`, `ARCHIVE/…/co-writer/`, upload bundle `~/.claude/jobs/a34aabd6/unzipped/co-writer/` |
+| **story-ninja** | only in an upload ZIP bundle | `~/.claude/jobs/a34aabd6/unzipped/story-ninja/SKILL.md` |
+| **lemon-coverage** | project-scoped | `QUANTUMSTORY/.agent/skills/lemon-coverage/`, `STORY-ASSAMBLY-LINE/.../lemon-coverage/` |
+| **dev-exec** | project-scoped | `LEMON-SCREENPLAY-DASHBOARD/agent/skills/dev-exec/`, `QUANTUMSTORY/.agent/skills/dev-exec/` |
+| **film-finance** | **does not exist** | no dir / no SKILL.md / no match (closest: generic `finance-lead`, `cfo-advisor` in MASTER-LIBRARY) |
+| **chivo** | **does not exist as a skill** | only a name in `OBSIDIAN BRAIN/wiki/…/matadero-cinematography.md` (cinematographer "Chivo" Lubezki) |
+
+**Verdict:** 4 of 6 exist as files but are **never installed as active global skills**
+(they're project-local or sitting unpacked in a job bundle); 2 don't exist at all. So Billy's
+"my six skills" list is **aspirational / a wish-list**, not a deployed skill set — on either
+the VPS (Part 1) or the Mac.
+
+**Reality of the Mac skill library:** it is *huge* — `find -name SKILL.md` returns
+**~500 skill files**, dominated by `MASTER-LIBRARY/skills/` (hundreds of generic
+`agency-*`, `cs-*`, marketing/eng automation skills) plus per-project `.agent/skills` dirs.
+The screenwriting-specific set lives in `lemon-studio-skills/` (`save-the-cat, story-grid-export,
+km-weiland, lyons-story-engine, bmoc-beat-engineer, enneagram-*, screenwr-ai-ter, …`) and in the
+upload bundle `~/.claude/jobs/a34aabd6/unzipped/` (`ai-billy, pluma-mexicana, horror-screenwriter,
+titulo-comercial, grisanti-*, story-grid-expert, co-writer, story-ninja, …`). None of these
+match Billy's six names verbatim — the *concepts* exist, the *names* don't.
+
+---
+
+## Gap 4 — Mac tooling & cloud auth ✅
+
+| CLI | Installed | Version | Auth status |
+|---|---|---|---|
+| `claude` | ✅ | 2.1.199 | (Claude Code) |
+| `firebase` | ✅ | 15.15.0 | logged in — 11 projects listed ✅ |
+| `vercel` | ❌ | — | **not installed** (`command not found`) |
+| `railway` | ✅ | 4.66.1 | **logged in as Billy Rovzar (billyrovzar@gmail.com)** ✅ |
+| `gcloud` | ✅ | 574.0.0 | account `billyrovzar@gmail.com`, project `lemon-studios-os` ✅ |
+| `gh` | ✅ | 2.95.0 | logged in as **`brovzar-lab`** (scopes: repo, workflow, gist, read:org) ✅ |
+| `node` | ✅ | v22.22.3 | — |
+| `npm` | ✅ | 10.9.8 | — |
+| `git` | ✅ | 2.50.1 | — |
+
+### App → host → URL → repo map (verified where possible)
+| App | Host | URL | Repo |
+|---|---|---|---|
+| LEMON-AI-CENTER | **Railway** (`railway.json`, service `lemon-ai-center`) | https://ceo.billyrovzar.com ✅ (README) | `brovzar-lab/lemon-ai-center` ✅ |
+| LEMON-SCREENPLAY-DASHBOARD | Firebase Hosting + VPS daemon | lemon-screenplay-dashboard.web.app ⚠️ (README) | `brovzar-lab/Lemon-Screenplay-Dashboard` ✅ |
+| BESTSCREEN | Firebase Hosting | bestscreen.web.app ⚠️ (README) | `brovzar-lab/bestscreen` ✅ |
+| QUANTUMSTORY | Firebase (project `screenpartner-…`) | ⚠️ not confirmed | `brovzar-lab/quantum-story` ✅ |
+| FRACTAL STORY ROOM | Firebase (`fractal-story-room`) | ⚠️ not confirmed | `brovzar-lab/FRACTAL-STORY-ROOM` ✅ |
+| WR-AI-TERS ROOM AG | Firebase (`wr-ai-ters-room`) | ⚠️ not confirmed | `brovzar-lab/Wr-AI-ters-Room-AG` ✅ |
+| AI-DETECTOR | local only | none (localhost) | not a repo |
+
+> **Two-account setup:** GitHub is `brovzar-lab`; Firebase/gcloud/Railway are
+> `billyrovzar@gmail.com`. **Vercel is not part of the stack on this Mac** — deployment
+> is Railway (LEMON-AI-CENTER) + Firebase Hosting (the rest). No Hostinger CLI present;
+> DNS `*.billyrovzar.com` fronts Railway/Cloudflare (see README + Gap 5).
+
+---
+
+## Gap 5 — Can the Mac reach Hermes? ✅
+
+**Two separate Hermes realities — don't conflate them.**
+
+### (a) The Mac runs its OWN local Hermes agent — usable as a brain ✅
+- `which hermes` → `/Users/quantumcode/.local/bin/hermes`, a wrapper execing
+  `~/.hermes/hermes-agent/venv/bin/hermes`.
+- Full Nous Research **hermes-agent** install at `~/.hermes/` (config.yaml, state.db,
+  sessions, skills, memories, source).
+- `~/.hermes/config.yaml`: `model.default: grok-4.3`, `provider: xai-oauth`,
+  `base_url: https://api.x.ai/v1`; auth in `~/.hermes/auth.json` (names only).
+- **Not currently paired/running:** `~/.hermes/pairing/` empty, `telegram.allowed_chats: ''`,
+  no hermes process live. But invocable directly via the CLI.
+
+### (b) The VPS Hermes gateway (187.124.251.98) — NO wired path from the Mac ✅
+- The "Quantum Hermes" VPS docs at `AGENTSINFO/VPS_Agents/Quantum_Hermes/` are **unfilled
+  templates**: `vps_connection.md` host/IP = "_(fill in)_"; `.env.example` all blank;
+  `agent_config.yaml` provider `""`, status "🟡 In Setup". No real endpoint, no token.
+- The only wired route to `187.124.251.98` is **Paperclip** (`PAPERCLIP/CLAUDE.md`):
+  `VPS="root@187.124.251.98"`, dashboard `https://paperclip.billyrovzar.com/LEMA/dashboard`
+  (Cloudflare → Caddy → :52418). That's **SSH + a web dashboard, not a programmatic Hermes API.**
+- Paperclip ships a `hermes_local` adapter (`hermes-paperclip-adapter@0.2.0` in its node_modules)
+  that shells out to a *local* hermes CLI — plus an `openclaw_gateway` adapter. **No hardcoded
+  remote VPS-Hermes URL or token** in the adapter or in `~/.claude`.
+
+### Decision for a Mac-side dashboard
+- ✅ **It can have a brain without standing up its own LLM layer** — two options already exist:
+  1. Reuse **LEMON-AI-CENTER's Anthropic layer** (`server/lib/anthropic.ts`, `ANTHROPIC_API_KEY`) — cleanest.
+  2. Shell out to the **local Hermes CLI** (grok-4.3) via `~/.local/bin/hermes` / Paperclip's `hermes_local` adapter.
+- ❌ **It cannot use the VPS Hermes as a remote brain** — there is no client, endpoint, or
+  token on the Mac for that. The remote piece is unprovisioned; the VPS is only an
+  SSH/Paperclip host today. Remote messaging-gateway (Telegram/Discord) is possible in
+  principle but not set up.
+
+---
+
+## Read-only compliance
+Every command in this report was a read/list/grep/version/auth-status call. No files under
+`/Users/quantumcode/CODE` or `~/.hermes` / `~/.claude` were created or modified except this
+report itself (`RECON-REPORT-MAC.md`). No secret values are printed anywhere — only file
+paths and variable names.
