@@ -72,5 +72,33 @@ Google auth can't run headless, so the authenticated flow was driven at the lib
 layer against real Firestore + a scratch vault; the browser verified wizard
 rendering and demo-mode degradation.
 
-**Next:** Milestone 3 — the slate board (cards in stage columns, film/series
-lanes, priority, staleness heat, waiting-on, external badge).
+## Milestone 3 — slate board + staleness engine (`3310be4`, 2026-07-02)
+
+The visual pipeline in the Dev Hell view: film and series lanes, a fixed
+column per stage, read-only cards (priority chip, staleness heat, waiting-on
+line, external badge, current-draft vNN, paused treatment). Verified with 23
+staleness + 7 board tests and a live browser drive of a 7-project fixture
+slate across both lanes.
+
+**Where things landed:**
+
+| Piece | Location |
+|---|---|
+| Staleness engine (spec §5) | `shared/slateStaleness.ts` — pure `assessStaleness(project, now)`, shared client/server; the briefing engine (M7) reuses it |
+| Thresholds as built | stage: idea/concept 30d · treatment/outline/bible/pilot-outline 21d · draft1/pilot-draft/rewrites/polish/season-arc 7d · market-ready 10d; `waiting_on` set → clock runs from `since`, 14d when `who` ∈ writers[] else 10d (buyer/platform); `staleness_days` overrides the threshold (clock keeps its kind); paused/dead excluded |
+| Heat levels | fresh <70% (quiet text) · aging ≥70% (violet chip) · stale ≥100% (coral chip); tooltip = days/threshold/clock |
+| Board | `src/components/workspace/SlateBoard.tsx` — lanes render only when populated; per-column sort = priority (A→C→none) then heat ratio; dead projects never render (they live in `_archive`); board is read-only — stage changes happen in `project.yaml` on disk |
+| View | `DevHellView` renders the board (confirm queue above); header adds archived count |
+
+**Deltas/notes:** board is deliberately not drag-and-drop — the folder is the
+source of truth, and writing project.yaml from the UI is a later, logged
+action. Dev-tooling note for browser verification without OAuth: inject store
+state via a main-world `<script type="module">` importing the store's
+*versioned* URL (check `performance.getEntriesByType('resource')` for the
+`?t=` stamp; `preview_eval` runs in an isolated world and bare URLs create a
+second module instance).
+
+**Next:** Milestone 4 — ingestion + slate index (extract text from PDF/FDX/
+Fountain/docx, scene-aware chunking, embeddings per D5: Firestore vector/KNN
+or stored-array + cosine scan; Gemini or Voyage embeddings, not a new
+heavyweight dependency; re-index on file change; hybrid with FlexSearch).
