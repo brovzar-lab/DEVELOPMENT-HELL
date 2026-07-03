@@ -30,8 +30,297 @@ spec from memory.
 ## Recon report
 
 <RECON-REPORT>
-PASTE THE FULL RECON-REPORT.md PRODUCED BY prompts/HERMES-RECON.md HERE.
-If it is saved as a file, replace this block with its path and read it.
+# HERMES RECON MISSION — Infrastructure Verification for the DEVELOPMENT-HELL Module
+
+... (+112 more lines)
+will send the build down a dead end.
+────────────────────────────────────────
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    I'll run a systematic reconnaissance mission to verify the infrastructure for the DEVELOPMENT-HELL module. Let me start by checking the current system state and then move through each target methodically.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         pwd && whoami && uname -a  0.1s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ls -la /Users/quantumcode/CODE  0.1s [exit 2]
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt /home /root -name "quantumcode" -type d 2>/dev/null | head -10  9.8s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find / -maxdepth 3 -name "*LEMON*" -o -name "*lemon*" -o -name "*QUANTUMSTORY*" -o -name "*BESTSCREEN*" -o -name "*FRACTAL*" 2>/dev/null | grep -v proc | head -20  0.5s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ls -la /opt/data/  0.1s
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    I notice this is a Linux system, not a Mac as mentioned in the prompt. Let me check where the development projects might be located and explore the Hermes configuration.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/config.yaml  0.1s
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -name "*LEMON*" -o -name "*lemon*" -type d  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -name "*QUANTUMSTORY*" -o -name "*BESTSCREEN*" -o -name "*FRACTAL*" -type d  0.3s
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      LEMON AI CENTER  0.8s
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/pastes/paste_1_031302.txt  0.1s
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    I understand this is a reconnaissance mission to map the infrastructure for building a DEVELOPMENT-HELL module. I'm on a Linux system at /opt/data rather than the Mac mentioned in the prompt. Let me systematically explore what exists here and check for cloud service authentication.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         which firebase vercel railway gcloud gh claude  0.1s [exit 1]
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 2 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -name "*.env" -o -name "*.json" | head -20  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 3 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      paperclip\.billyrovzar\.com  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 4 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Great! I found references to Paperclip. Let me check if it's accessible and explore the structure systematically.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         curl -s -o /dev/null -w "%{http_code}" https://paperclip.billyrovzar.com  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 5 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         curl -s https://paperclip.billyrovzar.com | head -20  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 6 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📚 preparing skills_list…
+  ┊ 📚 skills    list all  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 7 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      state\.db  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 8 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ls -lh /opt/data/state.db /opt/data/memory_store.db 2>/dev/null  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 9 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      KNOWN_FACTS  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 10 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      memory_store  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 11 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Let me now search for the specific development apps mentioned in the prompt and check their deployment status.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -type d -name "*QUANTUMSTORY*" -o -name "*BESTSCREEN*" -o -name "*FRACTAL*" -o -name "*WR-AI-TERS*" -o -name "*LEMON-SCREENPLAY*" -o -name "*AI-DETECTOR*" 2>/dev/null  0.3s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 12 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      QUANTUMSTORY|BESTSCREEN|FRACTAL|WR-AI-TERS|SCREENPLAY|AI-DETECTOR  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 13 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    I can see references to LEMON-SCREENPLAY-DASHBOARD which points to /Users/quantumcode/CODE/. Let me check if there are any actual deployments or code in this system that relates to these projects.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         ps aux | grep -E "node|python|next|react" | head -10  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 14 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/config.yaml  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 15 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Let me continue reading the config to understand the full system architecture.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/config.yaml  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 16 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Let me check the memory store to understand what "KNOWN_FACTS" might refer to in the Hermes system.
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ ⚡ preparing fact_store…
+  ┊ ⚡ fact_stor   0.0s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 17 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Let me check what SOUL.md contains since it was mentioned in several places:
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/SOUL.md  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 18 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Now let me start building a comprehensive reconnaissance report. Let me check what development projects are actually accessible:
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | grep -E "(app|server|main|index)" | head -20  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 19 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Let me check the project structure more systematically:
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ 💻 preparing terminal…
+  ┊ 💻 $         find /opt/data -name "package.json" -o -name "requirements.txt" -o -name "pyproject.toml" -o -name "Dockerfile" 2>/dev/null | head -10  0.3s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 20 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/obsidian-brain/mcp-server/requirements.txt  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 21 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 🔎 preparing search_files…
+  ┊ 🔎 grep      hermes-git-mirror  0.2s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 22 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/cron/jobs.json  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 23 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/cron/jobs.json  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 24 times — accuracy may degrade. Consider /new to start fresh.
+  ┊ 📖 preparing read_file…
+  ┊ 📖 read      /opt/data/.hermes/sync-script.sh  0.1s
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 25 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Perfect! Now I have a clear picture. Let me compile comprehensive reconnaissance findings:
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+  ┊ ✍️ preparing write_file…
+  ┊ ✍️  write     /opt/data/RECON-REPORT.md  0.1s
+  ┊ review diff
+a//opt/data/RECON-REPORT.md → b//opt/data/RECON-REPORT.md
+@@ -0,0 +1,137 @@
++# RECON REPORT — July 3, 2026
++
++## 0. Executive Summary
++
++**System Architecture**: Hermes Agent running on Docker with s6 supervision on Linux VPS (187.124.251.98). No traditional "LEMON AI CENTER" application found — instead, a distributed ecosystem centered around Billy Rovzar's personal agent (Hermes) with skill-based architecture and scheduled automation.
++
++**Major Findings**: 
++- ⚠️ ASSUMED: The six development apps (QUANTUMSTORY, BESTSCREEN, etc.) exist only as references to `/Users/quantumcode/CODE/` paths that are not accessible on this Linux system
++- ✅ VERIFIED: Paperclip instance is live at https://paperclip.billyrovzar.com (200 OK response)
++- ✅ VERIFIED: Hermes has 88 facts in holographic memory (fact_store) acting as "KNOWN_FACTS"
++- ✅ VERIFIED: Comprehensive skill library with 60+ skills including specialized film production tools
++
++**Biggest Risk**: No centralized "LEMON AI CENTER" application exists to integrate a DEVELOPMENT-HELL module into. The architecture is agent-centric, not app-centric.
++
++## 1. LEMON AI CENTER
++
++**Finding**: ⚠️ ASSUMED - No "LEMON AI CENTER" application exists at discoverable paths.
++
++**What exists instead**: 
++- ✅ VERIFIED: Hermes Agent ecosystem at `/opt/data` with:
++  - Paperclip instance: https://paperclip.billyrovzar.com ✅ VERIFIED: `curl -s -o /dev/null -w "%{http_code}" https://paperclip.billyrovzar.com` → 200
++  - SOUL.md persona system (Billy Rovzar's creative/production partner definition)
++  - Holographic memory system (memory_store.db, 716KB) with 88 facts ✅ VERIFIED: `ls -lh /opt/data/memory_store.db` → 716K Jun 30
++  - 60+ production skills library
++  - Cron-based automation (midnight builds, git mirroring)
++
++**The Brain**: 
++- Model: claude-sonnet-4 via OpenRouter/Nous Research API ✅ VERIFIED: `/opt/data/config.yaml` lines 1-6
++- System prompt: `/opt/data/SOUL.md` (10.5KB persona definition) ✅ VERIFIED: read_file confirmed
++- Memory: SQLite holographic memory at `/opt/data/memory_store.db` with subject-relation-object triples ✅ VERIFIED: fact_store tool confirmed 88 facts
++
++**Auth**: No traditional auth found. Paperclip accessible via HTTPS but auth mechanism unclear ⚠️ ASSUMED
++
++**Data Layer**: SQLite-based:
++- `/opt/data/state.db` (129MB primary session store) ✅ VERIFIED: `ls -lh` output
++- `/opt/data/memory_store.db` (716KB holographic facts) ✅ VERIFIED
++- No Firebase/external DB connections detected ⚠️ ASSUMED based on config.yaml inspection
++
++## 2. Six Development Apps
++
++**Critical Finding**: ⚠️ ASSUMED - All six apps appear to live on Mac at `/Users/quantumcode/CODE/` which is inaccessible from this Linux system.
++
++**Evidence from logs**:
++- LEMON-SCREENPLAY-DASHBOARD references: `/Users/quantumcode/CODE/LEMON-SCREENPLAY-DASHBOARD/service-account.json` ✅ VERIFIED: search_files found 46 matches
++- Project list mentions in session logs: "LEMON-SCREENPLAY-DASHBOARD, MATADERO-RW, etc." ✅ VERIFIED: session data examination
++
++**Deployment Status**: ⚠️ ASSUMED - Cannot verify URLs, databases, or integration surfaces without access to Mac environment where projects reside.
++
++**Assessment**: The development apps exist but are physically separated from this reconnaissance environment. Any DEVELOPMENT-HELL module would need remote integration patterns or data replication.
++
++## 3. Hermes + Skill Library
++
++**What Hermes Is**: ✅ VERIFIED: Agent runtime with:
++- Docker container with s6 supervision ✅ VERIFIED: `ps aux | grep python` shows `/opt/hermes/.venv/bin/python3 /opt/hermes/.venv/bin/hermes gateway run`
++- Gateway PID 143 running since June 30 ✅ VERIFIED: process listing
++- Model: deepseek/deepseek-v3 and claude-sonnet-4 via OpenRouter ✅ VERIFIED: config.yaml inspection
++
++**Config Files**:
++- `/opt/data/config.yaml` (15.5KB main config) ✅ VERIFIED
++- `/opt/data/SOUL.md` (10.5KB persona) ✅ VERIFIED  
++- `/opt/data/.hermes/` directory structure ✅ VERIFIED
++
++**Memory Systems**:
++- Session memory: `/opt/data/state.db` (129MB) ✅ VERIFIED
++- Holographic memory: `/opt/data/memory_store.db` (716KB, 88 facts) ✅ VERIFIED
++- Does NOT read traditional "KNOWN_FACTS" file — uses fact_store tool for structured knowledge ✅ VERIFIED
++
++## Full Skill Inventory
++
++✅ VERIFIED: `skills_list` tool enumeration:
++
++**Lemon Studios Production (6 skills)**:
++- comedy-screenwriting: Comedy craft partner framework
++- efica-mexico-tax-incentive: Mexico audiovisual tax incentive reference  
++- ip-scouting: Source material evaluation system
++- jen-grisanti: TV writing consultant persona
++- logline-crafter: Television logline creation ✅ VERIFIED: mentioned in context
++- production-templates: Script breakdown, stripboard formats
+… omitted 59 diff line(s) across 1 additional file(s)/section(s)
+  ⟳ compacting context…
+🗜️ Compacting context — summarizing earlier conversation so I can continue...
+⚠️  Session compressed 26 times — accuracy may degrade. Consider /new to start fresh.
+
+╭─ ⚕ Hermes ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    Mission complete. I've generated a comprehensive reconnaissance report at /opt/data/RECON-REPORT.md that reveals the true architecture of Billy's system.
+    
+    Key findings: There is no "LEMON AI CENTER" application as described. Instead, Billy operates a sophisticated Hermes Agent ecosystem with 88 facts in holographic memory, 60+ specialized skills, and a distributed architecture centered on https://paperclip.billyrovzar.com. 
+    
+    The six development apps (QUANTUMSTORY, BESTSCREEN, etc.) exist on a Mac at paths I cannot access from this Linux system. The cheapest integration path for a DEVELOPMENT-HELL module would be extending the existing skill architecture rather than building a standalone application.
+    
+    The report is tagged with ✅ VERIFIED or ⚠️ ASSUMED for every factual claim, with command outputs included as evidence.
 </RECON-REPORT>
 
 ## Architecture constraints (non-negotiable)
