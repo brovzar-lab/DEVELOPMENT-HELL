@@ -98,7 +98,45 @@ state via a main-world `<script type="module">` importing the store's
 `?t=` stamp; `preview_eval` runs in an isolated world and bare URLs create a
 second module instance).
 
-**Next:** Milestone 4 — ingestion + slate index (extract text from PDF/FDX/
-Fountain/docx, scene-aware chunking, embeddings per D5: Firestore vector/KNN
-or stored-array + cosine scan; Gemini or Voyage embeddings, not a new
-heavyweight dependency; re-index on file change; hybrid with FlexSearch).
+## Milestone 4 — ingestion + slate index (`45828e3`, 2026-07-03)
+
+The slate index is live: extract → scene-aware chunk → embed → search,
+bilingual, incremental, background-only. Verified against the REAL onboarded
+system (Billy onboarded `~/DEVELOPMENT` himself on 2026-07-03): a test project
+dropped into the live folder was scanned, embedded through real Gemini across
+all six formats, searched cross-lingually (EN query → ES scene), firewalled,
+and cleaned up automatically on delete.
+
+**D5 decisions as built:**
+
+| Decision | As built |
+|---|---|
+| Embedding provider | `gemini-embedding-001` via REST `fetch` with the app's existing `GEMINI_API_KEY` (already used for TTS) — no SDK, no new AI stack |
+| Dimensions | 768 (`outputDimensionality`), normalized client-side (reduced dims arrive unnormalized); task types `RETRIEVAL_DOCUMENT` / `RETRIEVAL_QUERY`; batch 32 |
+| Vector store | Plain `number[]` in `slate_chunks` + in-memory Float32 cosine index hydrated at boot (mirrors the FlexSearch brain's in-RAM pattern). D5's sanctioned fallback; upgrade to Firestore native KNN = create a vector index + swap the query path, schema unchanged |
+| Incremental | `slate_files` ledger (mtime/size/sha1); only changed files re-embed; removed files drop their chunks; single-flight background runner — scans/UI never wait |
+
+**Where things landed:**
+
+| Piece | Location |
+|---|---|
+| Extractors | `server/lib/slate/extract.ts` — fdx (fast-xml-parser, `trimValues:false` for styled runs), fountain (title page + boneyard stripped, forced `.headings`), pdf-parse, mammoth, gray-matter, txt; scene-heading-density heuristic promotes script PDFs to scene-aware |
+| Chunker | `server/lib/slate/chunk.ts` — scenes merge to ~1600 chars / split at 4800; chunks carry `sceneIndex`+`sceneHeading`; prose packs paragraphs |
+| Embeddings | `server/lib/slate/embeddings.ts` |
+| Ingest + index + search | `server/lib/slate/ingest.ts` — `runSlateIngestion` (fire-and-forget), `initSlateIndex` (boot), `searchSlate(q, {scope, project, limit})` |
+| Chunk metadata | `project/origin/kind/version/ep/seq/scene*` — **firewall enforced in retrieval**: `scope=internal` filters `origin=external` chunks out |
+| What gets indexed | material-ext files in the 7 canonical subfolders of live (non-dead) projects; `_inbox` and `_archive` never embed; badly-named files still index (content is real; the name stays queued) |
+| Routes | `GET /api/slate/search`; status adds `chunkCount/ingestRunning/lastIngestAt/ingestError` |
+| Wiring | onboard/rescan/watcher kick ingestion after every scan; boot hydrates the index even when the folder is unreachable (Railway serves search) |
+| Deps added | `pdf-parse`, `mammoth`, `fast-xml-parser` (+ `@types/pdf-parse`) — all in `dependencies` |
+
+**Live-system state (2026-07-03):** Billy onboarded for real — config
+`devFolderPath: /Users/quantumcode/DEVELOPMENT`; two real scripts await filing
+in `_inbox` (`AXOLOTL_FIRST_DRAFT.pdf`, `Colmena Junio2026.pdf`) — filing
+actions are a later milestone; the moment they're filed into project folders
+they'll be scanned + indexed automatically.
+
+**Next:** Milestone 5 — query chat: the brain (CLAUDE_MODELS via
+`getAnthropicClient` pattern) over hybrid retrieval (slate index + FlexSearch
++ slate metadata), passing the four §3 acceptance queries verbatim, firewall
+on creative queries from day one.
